@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d3159">
+<meta name="description" content="A scroll-through field guide to the trebuchet: what it is, its history, how it works, and why cannons replaced it.">
+<title>The Trebuchet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d3159; --bg-deep:#0a2747; --ink:#eaf3ff; --dim:#a9c4e2; --line:rgba(234,243,255,.55);
+    --grid:rgba(255,255,255,.055); --grid-major:rgba(255,255,255,.11);
+    --amber:#ffc65c; --red:#ff8a73; --green:#8fe3b0;
+    --hand:"Architects Daughter",cursive; --head:"IM Fell English SC",serif; --body:"Crimson Pro",Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;color:var(--ink);font:1.2rem/1.6 var(--body);
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(ellipse at 50% 0%,transparent 40%,rgba(3,15,32,.55) 100%),
+      linear-gradient(var(--grid-major) 1px,transparent 1px),linear-gradient(90deg,var(--grid-major) 1px,transparent 1px),
+      linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:100% 100%,120px 120px,120px 120px,24px 24px,24px 24px;
+    background-attachment:fixed}
+  a{color:var(--amber)}
+  h1,h2,h3{font-family:var(--head);font-weight:400;line-height:1.1;margin:0 0 .4em}
+  h2{font-size:clamp(2.2rem,6vw,3.6rem)}
+  h3{font-size:1.6rem}
+  .hand{font-family:var(--hand)}
+  p{margin:0 0 1em}
+  strong{color:var(--amber);font-weight:600}
+
+  /* ---------- hero ---------- */
+  #hero{height:260vh;position:relative}
+  .hero-sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%}
+  .hero-title{position:absolute;top:8vh;left:0;right:0;padding:0 16px;text-align:center;pointer-events:none}
+  .hero-title h1{font-size:clamp(3rem,12vw,8rem);letter-spacing:.04em;margin:0;text-shadow:0 0 30px rgba(10,39,71,.9)}
+  .hero-title .sub{font-family:var(--hand);color:var(--dim);font-size:clamp(1rem,2.6vw,1.4rem)}
+  .scroll-hint{position:absolute;bottom:4vh;left:0;right:0;text-align:center;font-family:var(--hand);color:var(--amber);animation:bob 1.6s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(8px)}}
+  .title-block{position:absolute;right:16px;bottom:16px;border:1.5px solid var(--line);font-family:var(--hand);font-size:.8rem;
+    display:grid;grid-template-columns:auto auto;background:rgba(10,39,71,.7)}
+  .title-block span{padding:2px 10px;border:.5px solid var(--line)}
+  @media (max-width:700px){.title-block{display:none}}
+
+  /* ---------- layout ---------- */
+  main{overflow-x:clip}
+  section.plate{max-width:1120px;margin:0 auto;padding:14vh 16px 6vh;position:relative}
+  .plate-no{font-family:var(--hand);color:var(--amber);letter-spacing:.2em;text-transform:uppercase;font-size:1rem;display:flex;align-items:center;gap:12px}
+  .plate-no::after{content:"";flex:1;height:0;border-top:1.5px dashed var(--line)}
+  .lede{font-size:1.45rem;max-width:46ch}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+  @media (max-width:820px){.cols{grid-template-columns:1fr}}
+  .panel{border:1.5px solid var(--line);padding:22px;position:relative;background:rgba(10,39,71,.45)}
+  .panel::before,.panel::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--amber)}
+  .panel::before{top:-6px;left:-6px;border-right:0;border-bottom:0}
+  .panel::after{bottom:-6px;right:-6px;border-left:0;border-top:0}
+
+  /* photos & video */
+  figure{margin:0}
+  .photo{border:1.5px solid var(--line);padding:10px;background:rgba(10,39,71,.6);position:relative;transform:rotate(-.6deg)}
+  .photo:nth-of-type(even){transform:rotate(.7deg)}
+  .photo img{display:block;width:100%;height:auto;max-height:520px;object-fit:cover;filter:saturate(.85) contrast(1.05)}
+  .photo figcaption,.video figcaption{font-family:var(--hand);font-size:.95rem;color:var(--dim);padding-top:8px}
+  .photo figcaption a,.video figcaption a{color:var(--dim)}
+  .photo.missing img{display:none}
+  .photo.missing::before{content:"[ image unavailable offline ]";display:block;padding:60px 0;text-align:center;font-family:var(--hand);color:var(--dim);border:1px dashed var(--line)}
+  .video{border:1.5px solid var(--line);padding:10px;background:rgba(10,39,71,.6)}
+  .video iframe{display:block;width:100%;aspect-ratio:16/9;border:0;background:#000}
+
+  /* scroll reveals */
+  .reveal{opacity:0;transform:translateY(60px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.left{transform:translateX(-90px)}
+  .reveal.right{transform:translateX(90px)}
+  .reveal.zoom{transform:scale(.85)}
+  .reveal.in{opacity:1;transform:none}
+  .photo.reveal.in{transform:rotate(-.6deg)}
+  .photo.reveal.in:nth-of-type(even){transform:rotate(.7deg)}
+  @media (prefers-reduced-motion:reduce){.reveal,.reveal.left,.reveal.right,.reveal.zoom{opacity:1;transform:none;transition:none}.scroll-hint{animation:none}html{scroll-behavior:auto}}
+
+  /* side nav */
+  #nav{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:10;display:flex;flex-direction:column;gap:10px}
+  #nav a{display:flex;align-items:center;justify-content:flex-end;gap:8px;text-decoration:none;color:var(--dim);font-family:var(--hand);font-size:.85rem}
+  #nav a span{opacity:0;transition:opacity .2s}
+  #nav a:hover span,#nav a:focus span,#nav a.active span{opacity:1}
+  #nav a::after{content:"";width:10px;height:10px;border:1.5px solid var(--dim);transform:rotate(45deg);transition:.2s}
+  #nav a.active{color:var(--amber)} #nav a.active::after{background:var(--amber);border-color:var(--amber)}
+  @media (max-width:900px){#nav{display:none}}
+  #progress{position:fixed;top:0;left:0;height:3px;background:var(--amber);width:0;z-index:11}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin:28px 0}
+  .stat{border:1.5px dashed var(--line);padding:14px;text-align:center}
+  .stat b{display:block;font-family:var(--hand);font-size:2rem;color:var(--amber);font-weight:400}
+  .stat span{font-family:var(--hand);font-size:.95rem;color:var(--dim)}
+
+  /* timeline */
+  .timeline{position:relative;margin:40px 0}
+  .timeline::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--line)}
+  .tl{width:50%;padding:0 36px 44px;position:relative}
+  .tl:nth-child(odd){margin-right:50%;text-align:right}
+  .tl:nth-child(even){margin-left:50%}
+  .tl::before{content:"";position:absolute;top:10px;width:14px;height:14px;background:var(--bg);border:2px solid var(--amber);transform:rotate(45deg)}
+  .tl:nth-child(odd)::before{right:-8px} .tl:nth-child(even)::before{left:-8px}
+  .tl .yr{font-family:var(--hand);color:var(--amber);font-size:1.15rem}
+  .tl h3{margin:.1em 0 .25em}
+  .tl p{font-size:1.1rem;margin:0}
+  @media (max-width:700px){
+    .timeline::before{left:8px}
+    .tl,.tl:nth-child(odd),.tl:nth-child(even){width:auto;margin:0;padding:0 0 36px 36px;text-align:left}
+    .tl:nth-child(odd)::before,.tl:nth-child(even)::before{left:1px;right:auto}
+  }
+
+  /* comparison table */
+  .table-wrap{overflow-x:auto;margin:24px 0}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:1.05rem}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{font-family:var(--hand);font-weight:400;color:var(--amber)}
+  thead th{background:rgba(255,198,92,.08)}
+  tr.us td{background:rgba(255,198,92,.08)}
+  .engines{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:24px}
+  .engine svg{width:100%;height:120px;display:block;margin-bottom:8px}
+
+  /* cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:28px}
+  .card h3{color:var(--ink)} .card p{font-size:1.08rem}
+  .card .tag{font-family:var(--hand);color:var(--amber);font-size:.95rem}
+  .card svg{width:100%;height:130px;display:block;margin:4px 0 10px}
+  svg .ink{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  svg .amb{fill:none;stroke:var(--amber);stroke-width:2;stroke-linecap:round}
+  svg .fill{fill:var(--amber)}
+  svg .dash{stroke-dasharray:5 5}
+  svg text{font-family:var(--hand);fill:var(--dim);font-size:14px}
+
+  /* parts explorer */
+  .explorer{display:grid;grid-template-columns:1.7fr 1fr;gap:28px;align-items:start;margin-top:28px}
+  @media (max-width:900px){.explorer{grid-template-columns:1fr}}
+  #partsSvg{width:100%;height:auto;display:block}
+  .part{cursor:pointer;outline:none}
+  .part .hit{stroke:transparent;stroke-width:22;fill:none;pointer-events:stroke}
+  .part .hitfill{fill:transparent}
+  .part:hover .ink,.part:focus .ink,.part.active .ink{stroke:var(--amber);filter:drop-shadow(0 0 6px rgba(255,198,92,.8))}
+  .part:hover .bgfill,.part:focus .bgfill,.part.active .bgfill{fill:rgba(255,198,92,.18)}
+  .callout circle{fill:var(--bg);stroke:var(--dim);stroke-width:1.5}
+  .callout text{fill:var(--ink);font-size:13px;text-anchor:middle;dominant-baseline:central}
+  .part.active .callout circle,.part:hover .callout circle{fill:var(--amber);stroke:var(--amber)}
+  .part.active .callout text,.part:hover .callout text{fill:var(--bg)}
+  #partInfo{position:sticky;top:20px;min-height:280px}
+  #partInfo h3{color:var(--amber)}
+  #partInfo .what{font-family:var(--hand);color:var(--dim);font-size:1rem;margin-bottom:.6em}
+  #partInfo .fact{border-top:1px dashed var(--line);padding-top:10px;font-size:1.05rem}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip,button{font-family:var(--hand);font-size:1rem;color:var(--ink);background:transparent;border:1.5px solid var(--line);padding:6px 12px;cursor:pointer}
+  .chip:hover,.chip:focus-visible,.chip.active{border-color:var(--amber);color:var(--amber)}
+  button:focus-visible,input:focus-visible,.part:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+
+  /* physics steps */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:28px 0;counter-reset:s}
+  .step{counter-increment:s}
+  .step::marker{content:none}
+  .step h3::before{content:counter(s) ". ";color:var(--amber)}
+  .formula{font-family:var(--hand);font-size:1.25rem;color:var(--amber);border:1px dashed var(--line);padding:6px 10px;display:inline-block;margin:6px 0 10px}
+
+  /* simulator */
+  .sim{margin-top:28px}
+  #simCanvas{width:100%;height:400px;display:block;border:1.5px solid var(--line);background:rgba(10,39,71,.5)}
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px 28px;margin:18px 0}
+  .controls label{font-family:var(--hand);display:block;font-size:1.05rem}
+  .controls output{color:var(--amber)}
+  input[type=range]{width:100%;accent-color:var(--amber)}
+  .sim-buttons{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  #fire{font-size:1.4rem;padding:10px 26px;border-color:var(--amber);color:var(--bg);background:var(--amber)}
+  #fire:disabled{opacity:.5;cursor:wait}
+  #simMsg{font-family:var(--hand);font-size:1.3rem;min-height:1.6em}
+  .readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:14px}
+
+  /* evolution chain */
+  .chain{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:28px 0}
+  .link{text-align:center;position:relative}
+  .link .era{font-family:var(--hand);color:var(--amber);font-size:.95rem}
+  .link h3{font-size:1.35rem}
+  .link p{font-size:1rem;margin:0}
+
+  ol.build{padding-left:1.4em} ol.build li{margin-bottom:.6em}
+  ol.build li::marker{font-family:var(--hand);color:var(--amber)}
+  ul.tidy{padding-left:1.2em} ul.tidy li{margin-bottom:.3em}
+  .warn{border-color:var(--red)} .warn h3{color:var(--red)}
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:28px}
+  .gallery .photo img{height:240px}
+  footer{max-width:1120px;margin:0 auto;padding:8vh 16px 10vh;font-size:1rem;color:var(--dim)}
+  footer h2{font-size:2rem;color:var(--ink)}
+  footer li{margin-bottom:.25em}
+</style>
+
+<div id="progress"></div>
+<nav id="nav" aria-label="Sections">
+  <a href="#what"><span>What is it?</span></a>
+  <a href="#history"><span>History</span></a>
+  <a href="#versus"><span>vs. Catapult</span></a>
+  <a href="#types"><span>Types</span></a>
+  <a href="#parts"><span>Parts</span></a>
+  <a href="#physics"><span>Physics</span></a>
+  <a href="#launch"><span>Launch it</span></a>
+  <a href="#impact"><span>Impact</span></a>
+  <a href="#build"><span>Build one</span></a>
+  <a href="#after"><span>What replaced it</span></a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header id="hero">
+  <div class="hero-sticky">
+    <canvas id="heroCanvas" aria-label="Blueprint drawing of a trebuchet. Scrolling fires it." role="img"></canvas>
+    <div class="hero-title">
+      <h1>The Trebuchet</h1>
+      <div class="sub">A field guide to history's mightiest siege engine</div>
+    </div>
+    <div class="scroll-hint" id="hint">scroll to release the counterweight ↓</div>
+    <div class="title-block" aria-hidden="true">
+      <span>SUBJECT</span><span>Counterweight Trebuchet</span>
+      <span>SCALE</span><span>1 : 50</span>
+      <span>ERA</span><span>c. 1150 – 1500 AD</span>
+      <span>SHEET</span><span>1 of 10</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ============ 1. WHAT ============ -->
+<section class="plate" id="what">
+  <div class="plate-no reveal">Plate I · What is it?</div>
+  <h2 class="reveal">A machine that throws castles at castles</h2>
+  <div class="cols">
+    <div>
+      <p class="lede reveal">A <strong>trebuchet</strong> (say it <em>TREB-yoo-shay</em>) is a giant medieval siege engine. It uses a long, swinging arm and a sling to hurl heavy stones at, and over, enemy walls.</p>
+      <p class="reveal">The big ones run on <strong>gravity</strong>. Crews winch a huge box of rocks or earth (the counterweight) high into the air. When they pull the trigger, the box falls, the arm whips around, and the sling flings the stone hundreds of meters.</p>
+      <p class="reveal">For about 300 years, from the 1100s to the 1400s, the counterweight trebuchet was the most powerful weapon on Earth.</p>
+    </div>
+    <figure class="photo reveal right">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tr%C3%A9buchet_Castelnaud.jpg?width=1000" alt="A full-size wooden counterweight trebuchet replica outside Castelnaud castle in France" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+      <figcaption>Fig. 1 — Working replica at Château de Castelnaud, France. <a href="https://commons.wikimedia.org/wiki/File:Tr%C3%A9buchet_Castelnaud.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <div class="stats">
+    <div class="stat reveal zoom"><b>~100 kg</b><span>typical stone ball</span></div>
+    <div class="stat reveal zoom"><b>300 m</b><span>range of a big machine</span></div>
+    <div class="stat reveal zoom"><b>10+ tonnes</b><span>counterweight on the largest</span></div>
+    <div class="stat reveal zoom"><b>~18 m</b><span>tall (Warwick Castle replica)</span></div>
+  </div>
+  <figure class="video reveal">
+    <iframe src="https://www.youtube-nocookie.com/embed/blubg9l8AVc" title="To help fire this trebuchet, I climbed inside it" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    <figcaption>Watch: firing the giant trebuchet at Warwick Castle, England, from inside its treadwheels. <a href="https://www.youtube.com/watch?v=blubg9l8AVc">Open on YouTube</a></figcaption>
+  </figure>
+</section>
+
+<!-- ============ 2. HISTORY ============ -->
+<section class="plate" id="history">
+  <div class="plate-no reveal">Plate II · History</div>
+  <h2 class="reveal">Two thousand years of throwing rocks</h2>
+  <p class="lede reveal">The trebuchet started in ancient China as a people-powered machine, traveled west along trade and war routes, and peaked in medieval Europe and the Middle East.</p>
+
+  <div class="timeline">
+    <div class="tl reveal left"><div class="yr">c. 400 BC · China</div><h3>Traction trebuchets</h3><p>Chinese texts describe a beam on a pivot with ropes on one end. A crew of dozens of people yanks the ropes all at once to fling the stone.</p></div>
+    <div class="tl reveal right"><div class="yr">Late 500s AD · Byzantium</div><h3>The idea moves west</h3><p>Traction trebuchets reach the Mediterranean, likely via the Avars. Byzantine writers record them at the siege of Thessalonica.</p></div>
+    <div class="tl reveal left"><div class="yr">1100s · Mediterranean</div><h3>The counterweight arrives</h3><p>Byzantine and Arab engineers swap the rope crew for a heavy falling weight. Now one machine can throw stones far heavier than people could ever pull.</p></div>
+    <div class="tl reveal right"><div class="yr">1189 – 1191 · Acre</div><h3>The Third Crusade</h3><p>At the siege of Acre, crusader kings batter the walls with named trebuchets, including "Bad Neighbour" and "God's Own Sling."</p></div>
+    <div class="tl reveal left"><div class="yr">1268 – 1273 · Xiangyang, China</div><h3>Back where it began</h3><p>Kublai Khan brings in two Persian engineers to build counterweight trebuchets. A city that held out for five years surrenders soon after.</p></div>
+    <div class="tl reveal right"><div class="yr">1304 · Stirling Castle, Scotland</div><h3>The Warwolf</h3><p>England's King Edward I builds the biggest trebuchet of its day. The Scots try to surrender before it's finished. Edward refuses until he has tested it on the walls.</p></div>
+    <div class="tl reveal left"><div class="yr">1300s – 1400s · Europe</div><h3>Gunpowder takes over</h3><p>Cannons first appear in a 1326 English manuscript. By 1453, giant Ottoman cannons smash the walls of Constantinople.</p></div>
+    <div class="tl reveal right"><div class="yr">1521 · Tenochtitlan, Mexico</div><h3>The last shot</h3><p>Low on gunpowder, Hernán Cortés's men build a trebuchet. Its first stone flies straight up and crashes back down onto the machine.</p></div>
+  </div>
+
+  <div class="cols">
+    <figure class="photo reveal left">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Muslim_traction_trebuchet.jpg?width=900" alt="Medieval manuscript illustration of a traction trebuchet being pulled by a crew" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+      <figcaption>Fig. 2 — A traction trebuchet in a medieval manuscript. <a href="https://commons.wikimedia.org/wiki/File:Muslim_traction_trebuchet.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+    <figure class="photo reveal right">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Trebuchet.Villard.de.Honnecourt.png?width=700" alt="13th-century ink sketch of a trebuchet base by Villard de Honnecourt" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+      <figcaption>Fig. 3 — A real medieval blueprint: Villard de Honnecourt's 1200s sketch of a trebuchet base. <a href="https://commons.wikimedia.org/wiki/File:Trebuchet.Villard.de.Honnecourt.png">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <div class="cols" style="margin-top:40px">
+    <figure class="photo reveal left">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Stirling_Warwolf_Trebuchet.jpg?width=900" alt="Model of the Warwolf trebuchet at Stirling" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+      <figcaption>Fig. 4 — The Warwolf at Stirling. <a href="https://commons.wikimedia.org/wiki/File:Stirling_Warwolf_Trebuchet.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+    <figure class="video reveal right">
+      <iframe src="https://www.youtube-nocookie.com/embed/FnMpZyvFnTE" title="Age of Empires IV: Hands on History – The Trebuchet" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+      <figcaption>Watch: historians fire a full-size reconstruction (Hands on History). <a href="https://www.youtube.com/watch?v=FnMpZyvFnTE">Open on YouTube</a></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 3. VERSUS ============ -->
+<section class="plate" id="versus">
+  <div class="plate-no reveal">Plate III · Trebuchet vs. catapult</div>
+  <h2 class="reveal">Every trebuchet is a catapult. Not every catapult is a trebuchet.</h2>
+  <p class="lede reveal"><em>Catapult</em> is the umbrella word for any machine that throws things without gunpowder. What sets each type apart is where it stores its energy.</p>
+
+  <div class="engines">
+    <div class="panel engine reveal zoom">
+      <svg viewBox="0 0 220 120" aria-hidden="true"><path class="ink" d="M20 70 L200 70 M40 70 L110 30 L180 70"/><path class="amb" d="M110 30 L110 95"/><path class="ink dash" d="M60 50 Q110 10 160 50"/><text x="70" y="112">tension</text></svg>
+      <h3>Ballista</h3><p><strong>Tension</strong>: bent arms pull a cord back like a giant crossbow. Fires bolts flat and accurately.</p>
+    </div>
+    <div class="panel engine reveal zoom">
+      <svg viewBox="0 0 220 120" aria-hidden="true"><path class="ink" d="M20 95 L200 95 M40 95 L40 75 L180 75 L180 95"/><path class="ink" d="M140 75 L70 20"/><circle class="fill" cx="68" cy="18" r="7"/><path class="amb" d="M132 68 q8 -6 16 0 q-8 6 -16 0"/><text x="80" y="115">torsion</text></svg>
+      <h3>Mangonel / onager</h3><p><strong>Torsion</strong>: a bundle of twisted rope or sinew snaps the arm forward. Small and quick, but limited by how much rope can twist.</p>
+    </div>
+    <div class="panel engine reveal zoom">
+      <svg viewBox="0 0 220 120" aria-hidden="true"><path class="ink" d="M20 105 L200 105 M80 105 L110 40 L140 105"/><path class="ink" d="M60 90 L135 25"/><rect class="ink" x="125" y="30" width="22" height="24"/><path class="amb" d="M136 60 L136 95"/><path class="amb" d="M128 88 l8 8 l8 -8"/><text x="85" y="20">gravity</text></svg>
+      <h3>Trebuchet</h3><p><strong>Gravity</strong> (or people pulling): a falling weight swings a lever and sling. Bigger weight, bigger throw. No rope to wear out.</p>
+    </div>
+  </div>
+
+  <div class="table-wrap reveal">
+    <table>
+      <thead><tr><th></th><th>Ballista</th><th>Mangonel / onager</th><th>Traction trebuchet</th><th>Counterweight trebuchet</th></tr></thead>
+      <tbody>
+        <tr><th>Power source</th><td>Tension</td><td>Torsion (twisted rope)</td><td>Crew pulling ropes</td><td>Falling counterweight</td></tr>
+        <tr><th>Ammo</th><td>Bolts, small stones</td><td>Stones, ~5–25 kg</td><td>Stones, ~2–60 kg</td><td>Stones, ~50–150 kg</td></tr>
+        <tr><th>Path of shot</th><td>Flat, direct</td><td>Medium arc</td><td>High arc</td><td>High arc</td></tr>
+        <tr><th>Repeatability</th><td>Good</td><td>Fair; rope stretches</td><td>Varies with crew</td><td>Very good: same weight, same drop</td></tr>
+        <tr><th>Best era</th><td>Greek & Roman</td><td>Roman to medieval</td><td>400 BC – 1200s</td><td>1100s – 1400s</td></tr>
+        <tr class="us"><th>Wall-smashing power</th><td>Low</td><td>Medium</td><td>Medium</td><td>Highest before cannons</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure class="photo reveal" style="max-width:640px;margin:30px auto 0">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Roman_Onager.jpg?width=900" alt="Drawing of a Roman onager, a torsion-powered catapult" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+    <figcaption>Fig. 5 — A Roman onager. Its power comes from twisted rope, not gravity. <a href="https://commons.wikimedia.org/wiki/File:Roman_Onager.jpg">Wikimedia Commons</a></figcaption>
+  </figure>
+</section>
+
+<!-- ============ 4. TYPES ============ -->
+<section class="plate" id="types">
+  <div class="plate-no reveal">Plate IV · Types</div>
+  <h2 class="reveal">A family of throwing machines</h2>
+  <div class="cards">
+    <div class="panel card reveal">
+      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M100 120 L120 50 L140 120"/><path class="ink" d="M60 105 L170 25"/><path class="amb" d="M60 105 L40 120 M60 105 L55 125 M60 105 L72 124"/><circle class="fill" cx="185" cy="22" r="6"/><text x="12" y="20">crew pulls</text></svg>
+      <div class="tag">c. 400 BC – 1200s</div><h3>Traction</h3>
+      <p>The original. Teams of 15 to 250 people pull ropes on the short end. Fast to reload: several shots a minute. But people can only pull so hard.</p>
+    </div>
+    <div class="panel card reveal">
+      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M100 120 L120 50 L140 120"/><path class="ink" d="M60 105 L170 25"/><rect class="ink" x="50" y="100" width="20" height="16"/><path class="amb" d="M60 116 L52 125 M60 116 L68 125"/><text x="150" y="112">weight + crew</text></svg>
+      <div class="tag">1100s</div><h3>Hybrid</h3>
+      <p>A small counterweight helps the pulling crew. This is the in-between step that led to pure gravity power.</p>
+    </div>
+    <div class="panel card reveal">
+      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M90 120 L120 45 L150 120"/><path class="ink" d="M40 100 L150 25"/><rect class="ink" x="138" y="10" width="30" height="34"/><path class="ink dash" d="M40 100 Q60 125 110 116"/><circle class="fill" cx="114" cy="114" r="5"/><text x="10" y="20">fixed box</text></svg>
+      <div class="tag">1100s – 1400s</div><h3>Fixed counterweight</h3>
+      <p>The weight is bolted solid to the arm. Simple and strong, but the weight swings in an arc, which wastes some energy.</p>
+    </div>
+    <div class="panel card reveal">
+      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M90 120 L120 45 L150 120"/><path class="ink" d="M40 100 L150 25"/><circle class="ink" cx="150" cy="25" r="4"/><path class="ink" d="M150 29 L150 48"/><rect class="ink" x="135" y="48" width="30" height="34"/><path class="amb" d="M180 50 v30 M174 74 l6 6 l6 -6"/><text x="10" y="20">hinged box</text></svg>
+      <div class="tag">1200s – 1400s</div><h3>Hinged counterweight</h3>
+      <p>The box hangs from a hinge so it can drop more nearly straight down. More of its energy goes into the throw. The design of most great medieval trebuchets.</p>
+    </div>
+    <div class="panel card reveal">
+      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M90 120 L120 45 L150 120"/><path class="ink" d="M50 105 L165 30"/><rect class="ink" x="150" y="40" width="18" height="26"/><rect class="ink" x="172" y="40" width="18" height="26"/><path class="ink" d="M160 32 h22"/><text x="10" y="20">two weights</text></svg>
+      <div class="tag">1300s – 1400s</div><h3>Couillard</h3>
+      <p>Two smaller counterweights hang on either side of a single upright. Lighter and faster to build and move.</p>
+    </div>
+    <div class="panel card reveal">
+      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M70 120 V40 M170 120 V40 M70 85 H170"/><path class="ink" d="M120 85 L60 30"/><rect class="ink" x="105" y="40" width="30" height="24"/><path class="amb" d="M120 64 V80"/><text x="150" y="112">axle rides track</text></svg>
+      <div class="tag">Modern</div><h3>Floating arm</h3>
+      <p>A hobby and competition design. The axle rolls along a track while the weight drops straight down, so almost no energy is wasted.</p>
+    </div>
+  </div>
+  <figure class="photo reveal" style="max-width:720px;margin:40px auto 0">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Trebuchet.jpg?width=900" alt="Reconstructed counterweight trebuchet at Château des Baux, France" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+    <figcaption>Fig. 6 — Reconstructed counterweight trebuchet at Château des Baux, France. <a href="https://commons.wikimedia.org/wiki/File:Trebuchet.jpg">Wikimedia Commons</a></figcaption>
+  </figure>
+</section>
+
+<!-- ============ 5. PARTS ============ -->
+<section class="plate" id="parts">
+  <div class="plate-no reveal">Plate V · Anatomy</div>
+  <h2 class="reveal">Take it apart</h2>
+  <p class="lede reveal">Hover over, tap, or tab to any part of the drawing to see its name and its job.</p>
+  <div class="explorer reveal">
+    <div>
+      <svg id="partsSvg" viewBox="0 0 800 520" role="group" aria-label="Labeled trebuchet diagram">
+        <line class="ink" x1="20" y1="496" x2="780" y2="496" style="stroke-dasharray:2 8;opacity:.6"/>
+        <g class="part" data-part="base" tabindex="0" role="button" aria-label="Base and wheels">
+          <rect class="ink bgfill" x="140" y="440" width="500" height="24"/>
+          <circle class="ink bgfill" cx="190" cy="478" r="16"/><circle class="ink bgfill" cx="590" cy="478" r="16"/>
+          <rect class="hitfill" x="140" y="440" width="500" height="56"/>
+          <g class="callout"><circle cx="660" cy="470" r="13"/><text x="660" y="470">5</text></g>
+        </g>
+        <g class="part" data-part="frame" tabindex="0" role="button" aria-label="A-frame">
+          <polyline class="ink" points="300,440 400,180 500,440"/><line class="ink" x1="340" y1="336" x2="460" y2="336"/>
+          <polyline class="hit" points="300,440 400,180 500,440"/><line class="hit" x1="340" y1="336" x2="460" y2="336"/>
+          <g class="callout"><circle cx="485" cy="300" r="13"/><text x="485" y="300">4</text></g>
+        </g>
+        <g class="part" data-part="trough" tabindex="0" role="button" aria-label="Trough">
+          <rect class="ink bgfill" x="180" y="428" width="210" height="12"/>
+          <rect class="hitfill" x="180" y="424" width="210" height="16"/>
+          <g class="callout"><circle cx="405" cy="418" r="13"/><text x="405" y="418">8</text></g>
+        </g>
+        <g class="part" data-part="winch" tabindex="0" role="button" aria-label="Winch">
+          <line class="ink" x1="580" y1="410" x2="250" y2="312" style="stroke-dasharray:6 6;opacity:.7"/>
+          <circle class="ink bgfill" cx="580" cy="410" r="28"/><circle class="ink" cx="580" cy="410" r="5"/>
+          <path class="ink" d="M580 382 V438 M552 410 H608 M560 390 L600 430 M600 390 L560 430"/>
+          <line class="ink" x1="580" y1="438" x2="580" y2="440"/>
+          <circle class="hitfill" cx="580" cy="410" r="32"/>
+          <g class="callout"><circle cx="626" cy="378" r="13"/><text x="626" y="378">10</text></g>
+        </g>
+        <g class="part" data-part="trigger" tabindex="0" role="button" aria-label="Trigger">
+          <path class="ink" d="M170 440 V418 Q170 404 158 406"/><line class="ink" x1="170" y1="428" x2="190" y2="428"/>
+          <rect class="hitfill" x="150" y="400" width="28" height="40"/>
+          <g class="callout"><circle cx="190" cy="392" r="13"/><text x="190" y="392">9</text></g>
+        </g>
+        <g class="part" data-part="arm" tabindex="0" role="button" aria-label="Throwing arm">
+          <line x1="462" y1="125" x2="150" y2="400" stroke="var(--ink)" stroke-width="16" stroke-linecap="round" class="ink" style="stroke-width:16"/>
+          <line x1="462" y1="125" x2="150" y2="400" stroke="var(--bg)" stroke-width="11" stroke-linecap="round"/>
+          <line class="hit" x1="462" y1="125" x2="150" y2="400"/>
+          <g class="callout"><circle cx="300" cy="248" r="13"/><text x="300" y="248">1</text></g>
+        </g>
+        <g class="part" data-part="counterweight" tabindex="0" role="button" aria-label="Counterweight">
+          <circle class="ink" cx="462" cy="125" r="5"/><path class="ink" d="M462 125 L438 140 M462 125 L486 140"/>
+          <rect class="ink bgfill" x="432" y="140" width="60" height="70"/>
+          <path class="ink" d="M432 160 L452 140 M432 185 L477 140 M432 210 L492 150 M452 210 L492 170 M477 210 L492 195" style="opacity:.6"/>
+          <rect class="hitfill" x="428" y="118" width="68" height="96"/>
+          <g class="callout"><circle cx="520" cy="175" r="13"/><text x="520" y="175">2</text></g>
+        </g>
+        <g class="part" data-part="axle" tabindex="0" role="button" aria-label="Axle">
+          <circle class="ink bgfill" cx="400" cy="180" r="12"/><circle class="ink" cx="400" cy="180" r="4"/>
+          <circle class="hitfill" cx="400" cy="180" r="16"/>
+          <g class="callout"><circle cx="372" cy="152" r="13"/><text x="372" y="152">3</text></g>
+        </g>
+        <g class="part" data-part="sling" tabindex="0" role="button" aria-label="Sling">
+          <path class="ink" d="M150 400 Q230 432 320 418"/><path class="ink" d="M138 410 Q230 440 322 426"/>
+          <path class="hit" d="M144 405 Q230 436 321 422"/>
+          <g class="callout"><circle cx="262" cy="402" r="13"/><text x="262" y="402">6</text></g>
+        </g>
+        <g class="part" data-part="pin" tabindex="0" role="button" aria-label="Release pin">
+          <line class="ink" x1="150" y1="400" x2="128" y2="420"/><circle class="ink" cx="138" cy="410" r="5"/>
+          <circle class="hitfill" cx="138" cy="410" r="14"/>
+          <g class="callout"><circle cx="110" cy="400" r="13"/><text x="110" y="400">7</text></g>
+        </g>
+        <g class="part" data-part="projectile" tabindex="0" role="button" aria-label="Projectile">
+          <circle class="ink bgfill" cx="334" cy="415" r="13"/><path class="ink" d="M326 410 q6 -4 12 2" style="opacity:.6"/>
+          <circle class="hitfill" cx="334" cy="415" r="16"/>
+          <g class="callout"><circle cx="350" cy="390" r="13"/><text x="350" y="390">11</text></g>
+        </g>
+      </svg>
+      <div class="chips" id="partChips"></div>
+    </div>
+    <div class="panel" id="partInfo" aria-live="polite">
+      <h3>Pick a part</h3>
+      <div class="what">Every numbered piece has a job.</div>
+      <p>Start with <strong>2, the counterweight</strong>. It's the engine of the whole machine.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. PHYSICS ============ -->
+<section class="plate" id="physics">
+  <div class="plate-no reveal">Plate VI · How it works</div>
+  <h2 class="reveal">Turning a falling box into a flying rock</h2>
+  <p class="lede reveal">A trebuchet is an energy converter. It stores energy slowly (crews winch the weight up over minutes) and releases it in about one second.</p>
+  <div class="steps">
+    <div class="panel step reveal">
+      <h3>Store</h3>
+      <div class="formula">PE = m · g · h</div>
+      <p>Lifting the counterweight stores <strong>gravitational potential energy</strong>. Double the weight or the height and you double the energy.</p>
+    </div>
+    <div class="panel step reveal">
+      <h3>Lever</h3>
+      <div class="formula">long arm ÷ short arm ≈ 4–6</div>
+      <p>The axle is a <strong>fulcrum</strong>. The long end travels about five times farther than the short end in the same time, so it moves about five times faster.</p>
+    </div>
+    <div class="panel step reveal">
+      <h3>Whip</h3>
+      <div class="formula">arm + sling ≈ a longer arm</div>
+      <p>The <strong>sling</strong> swings out like the tip of a whip. It acts like a longer arm and can roughly double the throw compared with no sling.</p>
+    </div>
+    <div class="panel step reveal">
+      <h3>Release</h3>
+      <div class="formula">range ≈ v² · sin(2θ) ÷ g</div>
+      <p>The sling slips off the <strong>release pin</strong>. Without air, a launch angle (θ) of 45° goes farthest. Real crews aimed by adjusting the pin.</p>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="panel reveal left">
+      <h3>Try the numbers</h3>
+      <p>A 10,000 kg counterweight falls 5 m:<br><span class="formula">10,000 × 9.8 × 5 ≈ 490,000 J</span></p>
+      <p>If about half of that reaches a 100 kg stone, the stone leaves at about <strong>70 m/s (250 km/h)</strong>.</p>
+      <p>On paper, that flies about 500 m. Air drag, friction, and an imperfect release cut it to the 150–300 m that real machines managed.</p>
+    </div>
+    <figure class="video reveal right">
+      <iframe src="https://www.youtube-nocookie.com/embed/hwkFCnEzK3Y" title="Trebuchet Design Physics Tutorial (With Tuning Guidelines)" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+      <figcaption>Watch: trebuchet physics and how to tune one to throw farther. <a href="https://www.youtube.com/watch?v=hwkFCnEzK3Y">Open on YouTube</a></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 7. LAUNCH ============ -->
+<section class="plate" id="launch">
+  <div class="plate-no reveal">Plate VII · Field test</div>
+  <h2 class="reveal">Hit the castle</h2>
+  <p class="lede reveal">Set the counterweight, the stone, and the release angle, then fire. Can your class hit the wall in three shots?</p>
+  <div class="sim reveal">
+    <canvas id="simCanvas" role="img" aria-label="Trebuchet launch simulator. Results are announced below."></canvas>
+    <div class="controls">
+      <label>Counterweight: <output id="cwOut"></output>
+        <input type="range" id="cw" min="1000" max="12000" step="500" value="6000"></label>
+      <label>Stone: <output id="pmOut"></output>
+        <input type="range" id="pm" min="20" max="150" step="5" value="70"></label>
+      <label>Release angle: <output id="angOut"></output>
+        <input type="range" id="ang" min="20" max="75" step="1" value="45"></label>
+    </div>
+    <div class="sim-buttons">
+      <button id="fire">Release!</button>
+      <button id="newTarget">Move the castle</button>
+      <div id="simMsg" aria-live="polite"></div>
+    </div>
+    <div class="readout">
+      <div class="stat"><b id="rTarget">–</b><span>castle distance</span></div>
+      <div class="stat"><b id="rRange">–</b><span>your shot</span></div>
+      <div class="stat"><b id="rSpeed">–</b><span>launch speed</span></div>
+      <div class="stat"><b id="rShots">0</b><span>shots fired</span></div>
+    </div>
+    <p class="hand" style="color:var(--dim);font-size:1rem;margin-top:12px">Simplified model: an 8 m drop, about 70% efficiency, and a rough allowance for air drag. Real machines vary.</p>
+  </div>
+</section>
+
+<!-- ============ 8. IMPACT ============ -->
+<section class="plate" id="impact">
+  <div class="plate-no reveal">Plate VIII · Impact</div>
+  <h2 class="reveal">How one machine changed the world</h2>
+  <div class="cards">
+    <div class="panel card reveal left"><div class="tag">Architecture</div><h3>Castles got tougher</h3><p>Builders answered with thicker walls, round towers that deflect stones, and rings of walls inside walls (concentric castles). Many castles mounted their own trebuchets on towers to fire back.</p></div>
+    <div class="panel card reveal"><div class="tag">Warfare</div><h3>Sieges got shorter</h3><p>Before, armies often just waited for a city to starve. Counterweight trebuchets could knock down walls, so cities like Acre and Xiangyang fell faster.</p></div>
+    <div class="panel card reveal right"><div class="tag">Terror</div><h3>More than rocks</h3><p>Armies threw fire pots, rotting animals, and the heads of captives. One account says that at Kaffa in 1346 attackers flung plague victims over the walls.</p></div>
+    <div class="panel card reveal left"><div class="tag">Language</div><h3>The first "engineers"</h3><p>Medieval Latin called a siege machine an <em>ingenium</em>, and the person who built it an <em>ingeniator</em>. That's where the English word <strong>engineer</strong> comes from.</p></div>
+    <div class="panel card reveal"><div class="tag">Science</div><h3>Thinking in motion</h3><p>Designing trebuchets pushed people to reason about levers, weights, and flight paths, ideas later made precise by physicists like Galileo and Newton.</p></div>
+    <div class="panel card reveal right"><div class="tag">Today</div><h3>A favorite STEM project</h3><p>Schools, castles, and pumpkin-throwing contests build trebuchets to teach energy, levers, and projectile motion.</p></div>
+  </div>
+  <figure class="video reveal" style="margin-top:36px">
+    <iframe src="https://www.youtube-nocookie.com/embed/cs8gamnMIS0" title="Unleashing a Medieval Trebuchet on a Wooden Palisade" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    <figcaption>Watch: what a trebuchet does to a wooden wall. <a href="https://www.youtube.com/watch?v=cs8gamnMIS0">Open on YouTube</a></figcaption>
+  </figure>
+</section>
+
+<!-- ============ 9. BUILD ============ -->
+<section class="plate" id="build">
+  <div class="plate-no reveal">Plate IX · Build one</div>
+  <h2 class="reveal">A tabletop trebuchet</h2>
+  <p class="lede reveal">About an hour, cheap materials, and a real lesson in energy. Works with one per group.</p>
+  <div class="cols">
+    <div class="panel reveal left">
+      <h3>Materials</h3>
+      <ul class="tidy">
+        <li>About 20 craft sticks or unsharpened pencils</li>
+        <li>A wooden skewer or dowel (the axle)</li>
+        <li>Hot glue or rubber bands</li>
+        <li>A paper cup or small bag + coins or washers (counterweight)</li>
+        <li>String and a 5 cm square of cloth or paper (sling)</li>
+        <li>A paper clip (release pin)</li>
+        <li>Mini marshmallows or foil balls (ammo)</li>
+      </ul>
+    </div>
+    <div class="panel reveal right">
+      <h3>Steps</h3>
+      <ol class="build">
+        <li>Glue a rectangle of sticks flat for the base.</li>
+        <li>Build two triangles (A-frames) and stand them on the base, a bit wider than one stick apart.</li>
+        <li>Poke the skewer through both peaks so it spins freely.</li>
+        <li>Attach the arm to the skewer so the long side is 4 to 5 times longer than the short side.</li>
+        <li>Hang the cup from the short end with a loop of string so it swings.</li>
+        <li>Bend the paper clip into a hook and tape it to the tip of the long end, pointing forward.</li>
+        <li>Make the sling: tie one string to the arm tip and the other to a small loop that slips over the hook. Put the cloth pouch in the middle. Make it about as long as the long arm.</li>
+        <li>Load the ammo, pull the arm down, aim, and let go.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="cols" style="margin-top:28px">
+    <div>
+      <div class="panel reveal left">
+        <h3>Tuning tips</h3>
+        <ul class="tidy">
+          <li><strong>Goes straight up?</strong> Bend the hook more closed so it lets go later.</li>
+          <li><strong>Slams into the floor?</strong> Open the hook so it lets go sooner.</li>
+          <li><strong>Not enough power?</strong> Add weight, or lengthen the long arm.</li>
+          <li><strong>Experiment:</strong> change one thing at a time and measure the distance.</li>
+        </ul>
+      </div>
+      <div class="panel warn reveal left" style="margin-top:22px">
+        <h3>Safety</h3>
+        <ul class="tidy">
+          <li>Soft ammo only. Wear eye protection.</li>
+          <li>Never stand in front of, or lean over, a loaded trebuchet.</li>
+          <li>Keep fingers clear of the arm's swing path.</li>
+        </ul>
+      </div>
+    </div>
+    <figure class="video reveal right">
+      <iframe src="https://www.youtube-nocookie.com/embed/ksG87OUZOkA" title="Build a Mini Trebuchet" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+      <figcaption>Watch: building a mini trebuchet. <a href="https://www.youtube.com/watch?v=ksG87OUZOkA">Open on YouTube</a></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 10. AFTER ============ -->
+<section class="plate" id="after">
+  <div class="plate-no reveal">Plate X · Why we stopped</div>
+  <h2 class="reveal">Gunpowder changed everything</h2>
+  <div class="cols">
+    <div>
+      <p class="lede reveal">Cannons arrived in the 1300s. Within about 150 years they had pushed trebuchets off the battlefield.</p>
+      <ul class="tidy reveal">
+        <li><strong>Size:</strong> a big trebuchet needed tonnes of timber and had to be built on site, often over weeks. A cannon arrived ready to fire.</li>
+        <li><strong>Speed:</strong> winching a counterweight takes minutes. Early cannons were slow too, but improved fast.</li>
+        <li><strong>Hitting power:</strong> a trebuchet lobs stones in a high arc. A cannon fires low and fast, so it can pound the base of a wall until it collapses.</li>
+        <li><strong>Defense:</strong> cannons led to low, thick, star-shaped forts that trebuchet stones barely scratched.</li>
+      </ul>
+    </div>
+    <figure class="photo reveal right">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Mons_Meg,_Medieval_Bombard,_Edinburgh,_Scotland._Pic_01.jpg?width=900" alt="Mons Meg, a giant 15th-century iron cannon on display at Edinburgh Castle" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+      <figcaption>Fig. 7 — Mons Meg, a 1449 bombard at Edinburgh Castle. It fired stone balls weighing around 150 kg. <a href="https://commons.wikimedia.org/wiki/File:Mons_Meg,_Medieval_Bombard,_Edinburgh,_Scotland._Pic_01.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+
+  <h3 class="reveal" style="margin-top:50px">The family tree of indirect fire</h3>
+  <p class="reveal">The trebuchet's real job, throwing something up and over a wall, never went away. Each new weapon did it farther and faster.</p>
+  <div class="chain">
+    <div class="panel link reveal zoom"><div class="era">1100s</div><h3>Trebuchet</h3><p>Gravity. ~300 m.</p></div>
+    <div class="panel link reveal zoom"><div class="era">1400s</div><h3>Bombard</h3><p>Huge early cannon that smashes walls.</p></div>
+    <div class="panel link reveal zoom"><div class="era">1500s →</div><h3>Mortar</h3><p>Short cannon that lobs shells high over walls. The trebuchet's closest heir.</p></div>
+    <div class="panel link reveal zoom"><div class="era">1800s →</div><h3>Howitzer</h3><p>Long-range artillery, many kilometers.</p></div>
+    <div class="panel link reveal zoom"><div class="era">1900s →</div><h3>Rockets & missiles</h3><p>Carry their own fuel. Hundreds of kilometers or more.</p></div>
+    <div class="panel link reveal zoom"><div class="era">Today</div><h3>Drones</h3><p>Fly to the target and drop a payload from above.</p></div>
+  </div>
+
+  <h3 class="reveal" style="margin-top:50px">Where you can still see them</h3>
+  <div class="gallery">
+    <figure class="photo reveal left">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Warwick_Castle_Trebuchet.jpg?width=800" alt="The large trebuchet at Warwick Castle, England" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+      <figcaption>Warwick Castle, England. <a href="https://commons.wikimedia.org/wiki/File:Warwick_Castle_Trebuchet.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+    <figure class="photo reveal">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Caerph_trebuchet.jpg?width=800" alt="Replica trebuchet at Caerphilly Castle, Wales" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+      <figcaption>Caerphilly Castle, Wales. <a href="https://commons.wikimedia.org/wiki/File:Caerph_trebuchet.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+    <figure class="photo reveal right">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Trebuchet_at_the_Tower.jpg?width=800" alt="Replica trebuchet at the Tower of London" loading="lazy" onerror="this.parentNode.classList.add('missing')">
+      <figcaption>Tower of London. <a href="https://commons.wikimedia.org/wiki/File:Trebuchet_at_the_Tower.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <figure class="video reveal" style="margin-top:36px">
+    <iframe src="https://www.youtube-nocookie.com/embed/2XARe5Z8YFM" title="Trebuchet Action Compilation" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    <figcaption>Watch: a homemade 20-foot trebuchet in action. <a href="https://www.youtube.com/watch?v=2XARe5Z8YFM">Open on YouTube</a></figcaption>
+  </figure>
+</section>
+</main>
+
+<footer>
+  <h2>Sources & credits</h2>
+  <p>Photos come from Wikimedia Commons. Each caption links to the file page, which lists the photographer and license. Videos belong to their YouTube creators.</p>
+  <ul>
+    <li><a href="https://en.wikipedia.org/wiki/Trebuchet">Trebuchet</a>, Wikipedia</li>
+    <li><a href="https://www.comsol.com/blogs/what-is-the-physics-behind-a-counterweight-trebuchet">What is the physics behind a counterweight trebuchet?</a>, COMSOL</li>
+    <li><a href="https://www.pbslearningmedia.org/resource/hew06.sci.phys.maf.trebuchet/energy-transfer-in-a-trebuchet/">Energy transfer in a trebuchet</a>, PBS LearningMedia</li>
+    <li><a href="https://commons.wikimedia.org/wiki/Category:Trebuchets">Category: Trebuchets</a>, Wikimedia Commons</li>
+  </ul>
+</footer>
+
+
+<script>
+const INK = '#eaf3ff', DIM = '#a9c4e2', AMBER = '#ffc65c', RED = '#ff8a73', GREEN = '#8fe3b0';
+const rad = d => d * Math.PI / 180;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- scroll reveals, nav, progress ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('in', e.isIntersecting)),
+  { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+const navLinks = [...document.querySelectorAll('#nav a')];
+const navObs = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle('active', a.hash === '#' + e.target.id));
+}), { rootMargin: '-45% 0px -50% 0px' });
+document.querySelectorAll('section.plate').forEach(s => navObs.observe(s));
+
+/* ---------- shared trebuchet drawing ----------
+   Units: ground at y=0, pivot at (0,-H). a = long-arm angle, s = sling angle (degrees, canvas coords). */
+const H = 100, L = 110, LS = 30, S = 70;
+function geom(a, s) {
+  const P = { x: 0, y: -H };
+  const tip = { x: P.x + L * Math.cos(rad(a)), y: P.y + L * Math.sin(rad(a)) };
+  const short = { x: P.x - LS * Math.cos(rad(a)), y: P.y - LS * Math.sin(rad(a)) };
+  const proj = { x: tip.x + S * Math.cos(rad(s)), y: tip.y + S * Math.sin(rad(s)) };
+  return { P, tip, short, proj };
+}
+function fit(c) {
+  const r = c.getBoundingClientRect(), d = devicePixelRatio || 1;
+  c.width = r.width * d; c.height = r.height * d;
+  const ctx = c.getContext('2d'); ctx.setTransform(d, 0, 0, d, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+function line(ctx, x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+function circle(ctx, x, y, r, fill) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); fill ? ctx.fill() : ctx.stroke(); }
+// Draws the machine at screen point (x,y)=ground under the pivot, scale k. Returns screen coords of the projectile.
+function drawTreb(ctx, x, y, k, a, s, loaded) {
+  const g = geom(a, s);
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  ctx.strokeStyle = INK; ctx.lineWidth = 2 / k; ctx.lineCap = ctx.lineJoin = 'round';
+  ctx.strokeRect(-115, -8, 190, 8);                       // base
+  circle(ctx, -90, 3, 8); circle(ctx, 50, 3, 8);          // wheels
+  line(ctx, -45, -8, 0, -H); line(ctx, 45, -8, 0, -H);    // A-frame
+  line(ctx, -24, -54, 24, -54);
+  ctx.strokeRect(-85, -14, 95, 6);                        // trough
+  ctx.lineWidth = 6 / k; line(ctx, g.short.x, g.short.y, g.tip.x, g.tip.y);   // arm
+  ctx.lineWidth = 2 / k; ctx.strokeStyle = '#0d3159'; ctx.lineWidth = 2.5 / k;
+  line(ctx, g.short.x, g.short.y, g.tip.x, g.tip.y);
+  ctx.strokeStyle = INK; ctx.lineWidth = 2 / k;
+  line(ctx, g.short.x, g.short.y, g.short.x, g.short.y + 8);  // hinged counterweight hangs straight down
+  ctx.strokeRect(g.short.x - 14, g.short.y + 8, 28, 30);
+  line(ctx, g.short.x - 14, g.short.y + 23, g.short.x, g.short.y + 8);
+  line(ctx, g.short.x - 14, g.short.y + 38, g.short.x + 14, g.short.y + 10);
+  circle(ctx, g.P.x, g.P.y, 4);                           // axle
+  ctx.lineWidth = 1.2 / k;
+  const end = loaded ? g.proj : { x: g.tip.x + 30 * Math.cos(rad(s)), y: g.tip.y + 30 * Math.sin(rad(s)) };
+  line(ctx, g.tip.x, g.tip.y, end.x, end.y);              // sling
+  if (loaded) { ctx.fillStyle = AMBER; circle(ctx, g.proj.x, g.proj.y, 5, true); }
+  ctx.restore();
+  return { x: x + g.proj.x * k, y: y + g.proj.y * k };
+}
+const swingPose = (q, theta) => ({ a: 130 + 155 * q * q, s: (360 - theta) * q * q * q });
+
+/* ---------- hero: scroll fires the trebuchet ---------- */
+const hero = document.getElementById('hero'), hc = document.getElementById('heroCanvas'), hint = document.getElementById('hint');
+let H_ = fit(hc);
+function drawHero() {
+  const { ctx, w, h } = H_;
+  ctx.clearRect(0, 0, w, h);
+  const p = clamp(scrollY / (hero.offsetHeight - innerHeight), 0, 1);
+  hint.style.opacity = p > .02 ? 0 : 1;
+  const k = Math.min(h * .55, w * .6) / 210, gy = h * .88, x = Math.max(w * .3, 135 * k);
+  ctx.strokeStyle = DIM; ctx.setLineDash([3, 9]); line(ctx, 0, gy + 10 * k, w, gy + 10 * k); ctx.setLineDash([]);
+  const q = clamp((p - .05) / .5, 0, 1), { a, s } = swingPose(q, 45);
+  // swing-path ghost arc
+  ctx.save(); ctx.strokeStyle = 'rgba(255,198,92,.35)'; ctx.setLineDash([6, 8]); ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(x, gy - H * k, L * k, rad(130), rad(285)); ctx.stroke(); ctx.restore();
+  // blueprint callouts, fading as the swing starts
+  const lab = 1 - q * 5;
+  if (lab > 0) {
+    const g = geom(a, s), S2 = pt => ({ x: x + pt.x * k, y: gy + pt.y * k });
+    ctx.save(); ctx.globalAlpha = lab; ctx.font = `${Math.max(13, 16 * k)}px "Architects Daughter"`;
+    ctx.fillStyle = DIM; ctx.strokeStyle = DIM; ctx.lineWidth = 1;
+    [[g.short, 70, -40, 'counterweight'], [g.P, -120, -60, 'axle'], [{ x: (g.P.x + g.tip.x) / 2, y: (g.P.y + g.tip.y) / 2 }, -150, -30, 'throwing arm'],
+     [g.proj, 60, 40, 'sling + stone']].forEach(([pt, dx, dy, t]) => {
+      const A = S2(pt); line(ctx, A.x, A.y, A.x + dx, A.y + dy);
+      const tw = ctx.measureText(t).width, tx0 = dx < 0 ? Math.max(4, A.x + dx - 6 - tw) : A.x + dx + 6;
+      ctx.textAlign = 'left'; ctx.fillText(t, tx0, A.y + dy + 5);
+    });
+    ctx.restore();
+  }
+  if (q < 1) { drawTreb(ctx, x, gy, k, a, s, true); return; }
+  drawTreb(ctx, x, gy, k, a, 80, false);
+  const P0 = drawTrebDry(x, gy, k), f = clamp((p - .55) / .4, 0, 1);
+  const Rpx = 2 * (w + 60 - P0.x), apex = Math.min(P0.y - 30, Rpx / 4);
+  const at = u => ({ x: P0.x + u * Rpx, y: P0.y - 4 * apex * u * (1 - u) });
+  ctx.save(); ctx.strokeStyle = AMBER; ctx.setLineDash([4, 7]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(P0.x, P0.y);
+  for (let i = 1; i <= 40; i++) { const pt = at(f * .5 * i / 40); ctx.lineTo(pt.x, pt.y); }
+  ctx.stroke(); ctx.restore();
+  const pt = at(f * .5); ctx.fillStyle = AMBER; circle(ctx, pt.x, pt.y, 5 * k, true);
+}
+function drawTrebDry(x, gy, k) { const g = geom(...Object.values(swingPose(1, 45))); return { x: x + g.proj.x * k, y: gy + g.proj.y * k }; }
+let heroQueued = false;
+addEventListener('scroll', () => {
+  document.getElementById('progress').style.width = (scrollY / (document.documentElement.scrollHeight - innerHeight) * 100) + '%';
+  if (!heroQueued) { heroQueued = true; requestAnimationFrame(() => { heroQueued = false; drawHero(); }); }
+}, { passive: true });
+addEventListener('resize', () => { H_ = fit(hc); drawHero(); sizeSim(); });
+document.fonts.ready.then(drawHero);
+drawHero();
+
+/* ---------- parts explorer ---------- */
+const PARTS = {
+  arm: [1, 'Throwing arm', 'The giant lever', 'A long wooden beam that pivots on the axle. The long end is 4 to 6 times longer than the short end, so it swings much faster than the falling weight.', 'Arms were often a single huge tree trunk, or several beams bound together with iron bands.'],
+  counterweight: [2, 'Counterweight', 'The engine', 'A huge box of stones, earth, sand, or lead hung from the short end. When it drops, its stored energy powers the whole throw.', 'The biggest medieval machines likely used counterweights of 10 tonnes or more, about the weight of two elephants.'],
+  axle: [3, 'Axle (pivot)', 'The fulcrum', 'A thick wooden or iron shaft that the arm rotates on. It carries the full load of the arm and counterweight.', 'Any friction at the axle steals energy from the throw, so it had to turn smoothly.'],
+  frame: [4, 'A-frame (uprights)', 'The tower', 'Braced timber triangles hold the axle high so the counterweight has room to fall.', 'Triangles hold their shape under load. Bridges and roofs use them for the same reason.'],
+  base: [5, 'Base and wheels', 'The foundation', 'A wide, heavy timber frame keeps the machine from tipping or jumping when it fires.', 'Some replicas sit on wheels. The machine rolls slightly as it fires, which lets the weight fall straighter and throw farther.'],
+  sling: [6, 'Sling', 'The whip', 'Two ropes and a leather pouch that cradle the stone. As the arm swings, the sling whips around even faster than the arm tip.', 'A well-tuned sling can roughly double how far a trebuchet throws.'],
+  pin: [7, 'Release pin', 'The aiming tool', 'A metal prong at the arm tip. One loop of the sling sits on it and slips off at just the right moment, setting the stone free.', 'Bending the pin changes when the stone lets go. That was the main way crews adjusted their aim.'],
+  trough: [8, 'Trough', 'The runway', 'A wooden channel under the frame. The sling and stone slide along it as the arm starts to swing, keeping the shot straight.', 'Without a trough, the stone can skid sideways and ruin the throw.'],
+  trigger: [9, 'Trigger', 'The safety catch', 'A hook that holds the cocked arm down. Yanking it with a long rope fires the machine.', 'Once triggered, nothing can stop the arm, so the crew stood well back.'],
+  winch: [10, 'Winch (windlass)', 'The reload system', 'A crank, capstan, or human-powered treadwheel that hauls the arm back down and lifts the counterweight up again.', 'At Warwick Castle, people walk inside giant treadwheels, like hamster wheels, to reload.'],
+  projectile: [11, 'Projectile', 'The payload', 'Usually a carved stone ball of 50 to 150 kg. Crews shaped stones to matching weights so shots landed in nearly the same spot.', 'Armies also threw fire pots, rotting animals, and worse.'],
+};
+const info = document.getElementById('partInfo'), chips = document.getElementById('partChips');
+const groups = Object.fromEntries([...document.querySelectorAll('#partsSvg .part')].map(g => [g.dataset.part, g]));
+function showPart(key) {
+  const [n, name, what, text, fact] = PARTS[key];
+  info.innerHTML = `<h3>${n}. ${name}</h3><div class="what">${what}</div><p>${text}</p><div class="fact"><span class="hand" style="color:var(--amber)">Did you know?</span> ${fact}</div>`;
+  for (const k in groups) groups[k].classList.toggle('active', k === key);
+  chips.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.part === key));
+}
+Object.entries(PARTS).sort((a, b) => a[1][0] - b[1][0]).forEach(([key, [n, name]]) => {
+  const b = document.createElement('button'); b.className = 'chip'; b.dataset.part = key; b.textContent = `${n} · ${name}`;
+  b.onclick = b.onmouseenter = b.onfocus = () => showPart(key); chips.append(b);
+});
+for (const [key, g] of Object.entries(groups)) {
+  g.addEventListener('mouseenter', () => showPart(key));
+  g.addEventListener('focus', () => showPart(key));
+  g.addEventListener('click', () => showPart(key));
+  g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPart(key); } });
+}
+
+/* ---------- launch simulator ---------- */
+const G = 9.81, DROP = 8, EFF = .7, FIELD = 450, HIT = 12;
+const sc = document.getElementById('simCanvas'), $ = id => document.getElementById(id);
+const cw = $('cw'), pm = $('pm'), ang = $('ang');
+let S_, target, shots, marks, damaged, anim = null, trail = [];
+function shot() {
+  const M = +cw.value, m = +pm.value, th = +ang.value;
+  const v = Math.sqrt(2 * EFF * M * G * DROP / (m + .02 * M));       // arm inertia soaks up some energy
+  return { v, th, R: v * v * Math.sin(rad(2 * th)) / G * .8 };        // .8 = rough air-drag allowance
+}
+function newTarget() {
+  target = Math.round(120 + Math.random() * 260); shots = 0; marks = []; damaged = false; trail = [];
+  $('rTarget').textContent = target + ' m'; $('rRange').textContent = '–'; $('rSpeed').textContent = '–';
+  $('rShots').textContent = 0; $('simMsg').textContent = ''; drawSim();
+}
+function sizeSim() { S_ = fit(sc); drawSim(); }
+function layout() {
+  const { w, h } = S_, gy = h - 36, k = h * .5 / 210, tx = 125 * k + 8;
+  return { w, h, gy, tx, k, ppm: (w - tx - 30) / FIELD };
+}
+function drawCastle(ctx, cx, gy, ppm) {
+  const half = Math.max(16, HIT * ppm), top = gy - 70;
+  ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath();
+  ctx.moveTo(cx - half, gy); ctx.lineTo(cx - half, top);
+  const n = 5, step = 2 * half / n;
+  for (let i = 0; i < n; i++) {
+    const x0 = cx - half + i * step, broke = damaged && (i === 2 || i === 3);
+    if (i % 2 === 0) { ctx.lineTo(x0, top - 10); ctx.lineTo(x0 + step, top - 10); ctx.lineTo(x0 + step, top); }
+    else ctx.lineTo(x0 + step, broke ? top + 30 : top);
+  }
+  ctx.lineTo(cx + half, gy); ctx.stroke();
+  ctx.strokeRect(cx - 6, gy - 22, 12, 22);                   // gate
+  if (damaged) { ctx.fillStyle = DIM; for (let i = 0; i < 9; i++) circle(ctx, cx - half + 4 + i * (2 * half - 8) / 8, gy - 3 - (i % 3) * 3, 3, true); }
+  ctx.fillStyle = DIM; ctx.font = '14px "Architects Daughter"'; ctx.textAlign = 'center'; ctx.fillText('target', cx, top - 18);
+}
+function drawSim(pose, proj) {
+  const { ctx, w, h } = S_, { gy, tx, k, ppm } = layout();
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = DIM; ctx.lineWidth = 1; line(ctx, 0, gy + 6, w, gy + 6);
+  ctx.fillStyle = DIM; ctx.font = '12px "Architects Daughter"'; ctx.textAlign = 'center';
+  for (let m = 50; m <= FIELD; m += 50) { const X = tx + m * ppm; line(ctx, X, gy + 6, X, gy + 12); ctx.fillText(m + ' m', X, gy + 26); }
+  drawCastle(ctx, tx + target * ppm, gy + 6, ppm);
+  marks.forEach(mk => { const X = tx + mk * ppm; ctx.strokeStyle = RED; line(ctx, X - 5, gy, X + 5, gy + 10); line(ctx, X + 5, gy, X - 5, gy + 10); });
+  if (trail.length > 1) {
+    ctx.save(); ctx.strokeStyle = AMBER; ctx.setLineDash([4, 6]); ctx.lineWidth = 1.5; ctx.beginPath();
+    trail.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.stroke(); ctx.restore();
+  }
+  const { a, s } = pose || swingPose(0, +ang.value);
+  drawTreb(ctx, tx, gy, k, a, s, !proj && !(pose && pose.empty));
+  if (proj) {
+    ctx.fillStyle = AMBER;
+    if (proj.y < 4) { ctx.beginPath(); ctx.moveTo(proj.x, 2); ctx.lineTo(proj.x - 6, 12); ctx.lineTo(proj.x + 6, 12); ctx.fill(); }
+    else circle(ctx, proj.x, proj.y, 5, true);
+  }
+}
+function fire() {
+  if (anim) return;
+  const { v, th, R } = shot(), { gy, tx, k, ppm } = layout();
+  $('fire').disabled = true; $('simMsg').textContent = ''; trail = [];
+  const g1 = geom(...Object.values(swingPose(1, th)));
+  const P0 = { x: tx + g1.proj.x * k, y: gy + g1.proj.y * k };
+  const landX = tx + Math.min(R, FIELD + 20) * ppm, h0 = (gy - P0.y) / ppm, tan = Math.tan(rad(th));
+  const swingT = reduced ? 1 : 900, flyT = reduced ? 1 : 900 + R * 3, t0 = performance.now();
+  anim = true;
+  (function frame(now) {
+    const t = now - t0;
+    if (t < swingT) { drawSim(swingPose(t / swingT, th)); return requestAnimationFrame(frame); }
+    const u = clamp((t - swingT) / flyT, 0, 1);
+    const p = { x: P0.x + u * (landX - P0.x), y: gy - ppm * (h0 * (1 - u) + R * tan * u * (1 - u)) };
+    trail.push(p);
+    drawSim({ a: 285, s: 80, empty: true }, p);
+    if (u < 1) return requestAnimationFrame(frame);
+    // landed
+    anim = null; $('fire').disabled = false; shots++;
+    const diff = Math.round(R - target), hit = Math.abs(R - target) <= HIT;
+    if (hit) damaged = true; else marks.push(R);
+    $('rRange').textContent = Math.round(R) + ' m';
+    $('rSpeed').textContent = Math.round(v) + ' m/s';
+    $('rShots').textContent = shots;
+    const msg = $('simMsg');
+    msg.style.color = hit ? GREEN : RED;
+    msg.textContent = hit ? `Direct hit in ${shots} shot${shots > 1 ? 's' : ''}! The wall crumbles.`
+      : diff < 0 ? `Short by ${-diff} m. More power or a better angle?` : `Over by ${diff} m. Ease off a little.`;
+    drawSim({ a: 285, s: 80, empty: true });
+  })(t0);
+}
+[[cw, 'cwOut', v => (+v).toLocaleString() + ' kg'], [pm, 'pmOut', v => v + ' kg'], [ang, 'angOut', v => v + '°']].forEach(([el, out, f]) => {
+  const upd = () => { $(out).textContent = f(el.value); if (!anim) drawSim(); };
+  el.addEventListener('input', upd); $(out).textContent = f(el.value);
+});
+$('fire').onclick = fire;
+$('newTarget').onclick = () => { if (!anim) newTarget(); };
+S_ = fit(sc); newTarget();
+document.fonts.ready.then(() => { if (!anim) drawSim(); });
+</script>
+</html>
