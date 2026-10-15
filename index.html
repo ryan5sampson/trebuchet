@@ -130,6 +130,7 @@
   .card h3{color:var(--ink)} .card p{font-size:1.08rem}
   .card .tag{font-family:var(--hand);color:var(--amber);font-size:.95rem}
   .card svg{width:100%;height:130px;display:block;margin:4px 0 10px}
+  .type-demo{width:100%;height:180px;display:block;margin:4px 0 10px}
   svg .ink{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   svg .amb{fill:none;stroke:var(--amber);stroke-width:2;stroke-linecap:round}
   svg .fill{fill:var(--amber)}
@@ -339,34 +340,35 @@
 <section class="plate" id="types">
   <div class="plate-no reveal">Plate IV · Types</div>
   <h2 class="reveal">A family of throwing machines</h2>
+  <p class="lede reveal">All six fire together, so you can compare them. The dashed amber line traces where the power comes from.</p>
   <div class="cards">
     <div class="panel card reveal">
-      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M100 120 L120 50 L140 120"/><path class="ink" d="M60 105 L170 25"/><path class="amb" d="M60 105 L40 120 M60 105 L55 125 M60 105 L72 124"/><circle class="fill" cx="185" cy="22" r="6"/><text x="12" y="20">crew pulls</text></svg>
+      <canvas class="type-demo" data-type="traction" role="img" aria-label="Animation. Traction trebuchet: a crew pulls ropes down on the short end, swinging the arm."></canvas>
       <div class="tag">c. 400 BC – 1200s</div><h3>Traction</h3>
       <p>The original. Teams of 15 to 250 people pull ropes on the short end. Fast to reload: several shots a minute. But people can only pull so hard.</p>
     </div>
     <div class="panel card reveal">
-      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M100 120 L120 50 L140 120"/><path class="ink" d="M60 105 L170 25"/><rect class="ink" x="50" y="100" width="20" height="16"/><path class="amb" d="M60 116 L52 125 M60 116 L68 125"/><text x="150" y="112">weight + crew</text></svg>
+      <canvas class="type-demo" data-type="hybrid" role="img" aria-label="Animation. Hybrid trebuchet: a small weight plus two pullers swing the arm."></canvas>
       <div class="tag">1100s</div><h3>Hybrid</h3>
       <p>A small counterweight helps the pulling crew. This is the in-between step that led to pure gravity power.</p>
     </div>
     <div class="panel card reveal">
-      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M90 120 L120 45 L150 120"/><path class="ink" d="M40 100 L150 25"/><rect class="ink" x="138" y="10" width="30" height="34"/><path class="ink dash" d="M40 100 Q60 125 110 116"/><circle class="fill" cx="114" cy="114" r="5"/><text x="10" y="20">fixed box</text></svg>
+      <canvas class="type-demo" data-type="fixed" role="img" aria-label="Animation. Fixed counterweight: the box is bolted to the arm and swings through a wide arc."></canvas>
       <div class="tag">1100s – 1400s</div><h3>Fixed counterweight</h3>
       <p>The weight is bolted solid to the arm. Simple and strong, but the weight swings in an arc, which wastes some energy.</p>
     </div>
     <div class="panel card reveal">
-      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M90 120 L120 45 L150 120"/><path class="ink" d="M40 100 L150 25"/><circle class="ink" cx="150" cy="25" r="4"/><path class="ink" d="M150 29 L150 48"/><rect class="ink" x="135" y="48" width="30" height="34"/><path class="amb" d="M180 50 v30 M174 74 l6 6 l6 -6"/><text x="10" y="20">hinged box</text></svg>
+      <canvas class="type-demo" data-type="hinged" role="img" aria-label="Animation. Hinged counterweight: the box hangs from a hinge and drops nearly straight down."></canvas>
       <div class="tag">1200s – 1400s</div><h3>Hinged counterweight</h3>
       <p>The box hangs from a hinge so it can drop more nearly straight down. More of its energy goes into the throw. The design of most great medieval trebuchets.</p>
     </div>
     <div class="panel card reveal">
-      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M90 120 L120 45 L150 120"/><path class="ink" d="M50 105 L165 30"/><rect class="ink" x="150" y="40" width="18" height="26"/><rect class="ink" x="172" y="40" width="18" height="26"/><path class="ink" d="M160 32 h22"/><text x="10" y="20">two weights</text></svg>
+      <canvas class="type-demo" data-type="couillard" role="img" aria-label="Animation. Couillard: two weights hang either side of a single post."></canvas>
       <div class="tag">1300s – 1400s</div><h3>Couillard</h3>
       <p>Two smaller counterweights hang on either side of a single upright. Lighter and faster to build and move.</p>
     </div>
     <div class="panel card reveal">
-      <svg viewBox="0 0 240 130" aria-hidden="true"><path class="ink" d="M10 120 H230 M70 120 V40 M170 120 V40 M70 85 H170"/><path class="ink" d="M120 85 L60 30"/><rect class="ink" x="105" y="40" width="30" height="24"/><path class="amb" d="M120 64 V80"/><text x="150" y="112">axle rides track</text></svg>
+      <canvas class="type-demo" data-type="floating" role="img" aria-label="Animation. Floating arm: the weight falls straight down while the axle rolls along a track."></canvas>
       <div class="tag">Modern</div><h3>Floating arm</h3>
       <p>A hobby and competition design. The axle rolls along a track while the weight drops straight down, so almost no energy is wasted.</p>
     </div>
@@ -778,7 +780,7 @@ addEventListener('scroll', () => {
   document.getElementById('progress').style.width = (scrollY / (document.documentElement.scrollHeight - innerHeight) * 100) + '%';
   if (!heroQueued) { heroQueued = true; requestAnimationFrame(() => { heroQueued = false; drawHero(); }); }
 }, { passive: true });
-addEventListener('resize', () => { H_ = fit(hc); drawHero(); sizeSim(); });
+addEventListener('resize', () => { H_ = fit(hc); drawHero(); sizeSim(); sizeDemos(); });
 document.fonts.ready.then(drawHero);
 drawHero();
 
@@ -909,5 +911,78 @@ $('fire').onclick = fire;
 $('newTarget').onclick = () => { if (!anim) newTarget(); };
 S_ = fit(sc); newTarget();
 document.fonts.ready.then(() => { if (!anim) drawSim(); });
+
+/* ---------- type demos: six machines firing in sync ---------- */
+function typeGeom(type, q) {
+  const a = 130 + 155 * q * q, s = 315 * q * q * q, c = Math.cos(rad(a)), sn = Math.sin(rad(a));
+  const L = type === 'floating' ? 55 : 70, LS = type === 'traction' ? 26 : 18, S = 40;
+  // Floating arm: weight rides vertical rails (x=0), so the axle slides along its track instead.
+  const P = type === 'floating' ? { x: LS * c, y: -50 } : { x: 0, y: -60 };
+  const tip = { x: P.x + L * c, y: P.y + L * sn }, sh = { x: P.x - LS * c, y: P.y - LS * sn };
+  const proj = { x: tip.x + S * Math.cos(rad(s)), y: tip.y + S * Math.sin(rad(s)) };
+  const cw = type === 'fixed' ? { x: sh.x - 10 * c, y: sh.y - 10 * sn }
+    : type === 'floating' ? sh
+    : type === 'traction' ? null
+    // Hinged boxes lag behind the arm, so they drop more nearly straight down than a fixed box.
+    : { x: 11.6 + (sh.x - 11.6) * .3, y: sh.y + (type === 'hybrid' ? 7 : 14) };
+  return { a, s, P, tip, sh, proj, cw };
+}
+function drawCrew(ctx, sh, n, q) {
+  for (let i = 0; i < n; i++) {
+    const fx = 16 + i * 9, hy = -13 + q * 6, head = -21 + q * 5;
+    line(ctx, sh.x, sh.y, fx - 2, hy);                                   // rope
+    circle(ctx, fx, head, 2.5);
+    line(ctx, fx, head + 2.5, fx + 1, -7 + q * 3);                        // body
+    line(ctx, fx + 1, -7 + q * 3, fx - 3, 0); line(ctx, fx + 1, -7 + q * 3, fx + 5, 0);
+    line(ctx, fx, head + 5, fx - 2, hy);                                 // arms
+  }
+}
+function drawType(ctx, w, h, type, q, fly) {
+  const k = h / 145, ox = w * .42, oy = h - 6, g = typeGeom(type, q);
+  ctx.clearRect(0, 0, w, h);
+  ctx.save(); ctx.translate(ox, oy); ctx.scale(k, k);
+  ctx.strokeStyle = INK; ctx.fillStyle = INK; ctx.lineWidth = 1.5 / k; ctx.lineCap = ctx.lineJoin = 'round';
+  line(ctx, -ox / k, 0, (w - ox) / k, 0);
+  if (type === 'couillard') { line(ctx, 0, 0, 0, -60); line(ctx, -16, 0, 0, -26); line(ctx, 16, 0, 0, -26); }
+  else if (type === 'floating') {
+    line(ctx, -13, 0, -13, -95); line(ctx, 13, 0, 13, -95);           // weight rails
+    line(ctx, -30, 0, -30, -50); line(ctx, 30, 0, 30, -50); line(ctx, -34, -50, 34, -50);   // axle track
+  } else { line(ctx, -28, 0, 0, -60); line(ctx, 28, 0, 0, -60); line(ctx, -14, -30, 14, -30); }
+  // trace of the power source
+  ctx.save(); ctx.strokeStyle = AMBER; ctx.setLineDash([3, 4]); ctx.beginPath();
+  for (let i = 0; i <= 30; i++) { const t = typeGeom(type, q * i / 30), pt = t.cw || t.sh; i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y); }
+  ctx.stroke(); ctx.restore();
+  ctx.lineWidth = 3.5 / k; line(ctx, g.sh.x, g.sh.y, g.tip.x, g.tip.y); ctx.lineWidth = 1.5 / k;
+  circle(ctx, g.P.x, g.P.y, 2.5);
+  const { cw, sh } = g;
+  if (type === 'fixed') { ctx.save(); ctx.translate(cw.x, cw.y); ctx.rotate(rad(g.a)); ctx.strokeRect(-11, -11, 22, 22); ctx.restore(); }
+  else if (type === 'floating') ctx.strokeRect(cw.x - 11, cw.y - 2, 22, 24);
+  else if (type === 'hybrid') { line(ctx, sh.x, sh.y, cw.x, cw.y - 6); ctx.strokeRect(cw.x - 6, cw.y - 6, 12, 12); drawCrew(ctx, sh, 2, q); }
+  else if (type === 'traction') drawCrew(ctx, sh, 3, q);
+  else {
+    const bw = type === 'couillard' ? 16 : 22;
+    if (type === 'couillard') { ctx.save(); ctx.globalAlpha = .5; ctx.strokeRect(cw.x - bw / 2 + 5, cw.y - 15, bw, 24); ctx.restore(); }
+    line(ctx, sh.x, sh.y, cw.x, cw.y - 12); ctx.strokeRect(cw.x - bw / 2, cw.y - 12, bw, 24);
+  }
+  ctx.lineWidth = 1 / k;
+  if (fly == null) { line(ctx, g.tip.x, g.tip.y, g.proj.x, g.proj.y); ctx.fillStyle = AMBER; circle(ctx, g.proj.x, g.proj.y, 3, true); }
+  else line(ctx, g.tip.x, g.tip.y, g.tip.x + 4, g.tip.y + 16);
+  ctx.restore();
+  if (fly != null) {
+    const P0 = { x: ox + g.proj.x * k, y: oy + g.proj.y * k }, Rpx = 2 * (w + 20 - P0.x), apex = Math.min(P0.y - 6, Rpx / 4), u = fly * .5;
+    ctx.fillStyle = AMBER; circle(ctx, P0.x + u * Rpx, P0.y - 4 * apex * u * (1 - u), 3, true);
+  }
+}
+const demos = [...document.querySelectorAll('.type-demo')].map(c => ({ c, type: c.dataset.type, on: false }));
+function sizeDemos() { demos.forEach(d => { Object.assign(d, fit(d.c)); drawType(d.ctx, d.w, d.h, d.type, reduced ? 1 : 0); }); }
+const demoObs = new IntersectionObserver(es => es.forEach(e => demos.find(d => d.c === e.target).on = e.isIntersecting));
+demos.forEach(d => demoObs.observe(d.c));
+sizeDemos();
+// One shared clock: wait .7s, swing .8s, fly .9s, hold .9s.
+if (!reduced) (function tick(now) {
+  const t = now % 3300, q = clamp((t - 700) / 800, 0, 1), fly = t > 1500 && t < 2400 ? (t - 1500) / 900 : null;
+  demos.forEach(d => d.on && drawType(d.ctx, d.w, d.h, d.type, q, fly));
+  requestAnimationFrame(tick);
+})(performance.now());
 </script>
 </html>
