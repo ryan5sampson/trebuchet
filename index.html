@@ -353,14 +353,9 @@
       <p>A small counterweight helps the pulling crew. This is the in-between step that led to pure gravity power.</p>
     </div>
     <div class="panel card reveal">
-      <canvas class="type-demo" data-type="fixed" role="img" aria-label="Animation. Fixed counterweight: the box is bolted to the arm and swings through a wide arc."></canvas>
-      <div class="tag">1100s – 1400s</div><h3>Fixed counterweight</h3>
-      <p>The weight is bolted solid to the arm. Simple and strong, but the weight swings in an arc, which wastes some energy.</p>
-    </div>
-    <div class="panel card reveal">
-      <canvas class="type-demo" data-type="hinged" role="img" aria-label="Animation. Hinged counterweight: the box hangs from a hinge and drops nearly straight down."></canvas>
-      <div class="tag">1200s – 1400s</div><h3>Hinged counterweight</h3>
-      <p>The box hangs from a hinge so it can drop more nearly straight down. More of its energy goes into the throw. The design of most great medieval trebuchets.</p>
+      <canvas class="type-demo" data-type="counterweight" role="img" aria-label="Animation. Counterweight trebuchet: a faint fixed box swings through a wide arc, while a hinged box drops nearly straight down."></canvas>
+      <div class="tag">1100s – 1400s</div><h3>Counterweight</h3>
+      <p>A heavy box replaces the crew. Early ones bolted it to the arm (faint box), so it swung in a wide arc. Later ones hung it from a hinge (solid box), so it dropped almost straight down and put more energy into the throw. Most great medieval trebuchets were hinged.</p>
     </div>
     <div class="panel card reveal">
       <canvas class="type-demo" data-type="couillard" role="img" aria-label="Animation. Couillard: two weights hang either side of a single post."></canvas>
@@ -371,6 +366,11 @@
       <canvas class="type-demo" data-type="floating" role="img" aria-label="Animation. Floating arm: the weight falls straight down while the axle rolls along a track."></canvas>
       <div class="tag">Modern</div><h3>Floating arm</h3>
       <p>A hobby and competition design. The axle rolls along a track while the weight drops straight down, so almost no energy is wasted.</p>
+    </div>
+    <div class="panel card reveal">
+      <canvas class="type-demo" data-type="whipper" role="img" aria-label="Animation. Whipper: the counterweight starts high above the axle on a hinged hanger, then swings over and down, whipping the arm around."></canvas>
+      <div class="tag">Modern</div><h3>Whipper</h3>
+      <p>The counterweight starts high above the axle on a hinged hanger that acts like a second arm. It tips over and swings down, pulling the arm through a much bigger swing. Hobby builders use it to get more throw from the same weight.</p>
     </div>
   </div>
   <figure class="photo reveal" style="max-width:720px;margin:40px auto 0">
@@ -914,13 +914,17 @@ document.fonts.ready.then(() => { if (!anim) drawSim(); });
 
 /* ---------- type demos: six machines firing in sync ---------- */
 function typeGeom(type, q) {
-  const a = 130 + 155 * q * q, s = 315 * q * q * q, c = Math.cos(rad(a)), sn = Math.sin(rad(a));
-  const L = type === 'floating' ? 55 : 70, LS = type === 'traction' ? 26 : 18, S = 30;
+  const wh = type === 'whipper';
+  // Whipper: the long arm starts hanging straight down and turns through a much bigger swing.
+  const a = wh ? 90 + 200 * q * q : 130 + 155 * q * q, s = 315 * q * q * q, c = Math.cos(rad(a)), sn = Math.sin(rad(a));
+  const L = type === 'floating' ? 55 : wh ? 60 : 70, LS = type === 'traction' ? 26 : wh ? 20 : 18, S = 30;
   // Floating arm: weight rides vertical rails (x=0), so the axle slides along its track instead.
-  const P = type === 'floating' ? { x: LS * c, y: -50 } : { x: 0, y: -60 };
+  const P = type === 'floating' ? { x: LS * c, y: -50 } : { x: 0, y: wh ? -72 : -60 };
   const tip = { x: P.x + L * c, y: P.y + L * sn }, sh = { x: P.x - LS * c, y: P.y - LS * sn };
   const proj = { x: tip.x + S * Math.cos(rad(s)), y: tip.y + S * Math.sin(rad(s)) };
+  const hang = 270 + 180 * Math.min(q, 1) ** 1.5;   // whipper hanger: starts pointing up, tips over, ends hanging down
   const cw = type === 'fixed' ? { x: sh.x - 10 * c, y: sh.y - 10 * sn }
+    : wh ? { x: sh.x + 26 * Math.cos(rad(hang)), y: sh.y + 26 * Math.sin(rad(hang)) }
     : type === 'floating' ? sh
     : type === 'traction' ? null
     // Hinged boxes lag behind the arm, so they drop more nearly straight down than a fixed box.
@@ -947,15 +951,23 @@ function drawType(ctx, w, h, type, q, fly) {
   else if (type === 'floating') {
     line(ctx, -13, 0, -13, -95); line(ctx, 13, 0, 13, -95);           // weight rails
     line(ctx, -30, 0, -30, -50); line(ctx, 30, 0, 30, -50); line(ctx, -34, -50, 34, -50);   // axle track
-  } else { line(ctx, -28, 0, 0, -60); line(ctx, 28, 0, 0, -60); line(ctx, -14, -30, 14, -30); }
+  } else { const py = g.P.y; line(ctx, -28, 0, 0, py); line(ctx, 28, 0, 0, py); line(ctx, -14, py / 2, 14, py / 2); }
   // trace of the power source
-  ctx.save(); ctx.strokeStyle = AMBER; ctx.setLineDash([3, 4]); ctx.beginPath();
-  for (let i = 0; i <= 30; i++) { const t = typeGeom(type, q * i / 30), pt = t.cw || t.sh; i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y); }
-  ctx.stroke(); ctx.restore();
+  const parts = type === 'counterweight' ? [['fixed', .4], ['hinged', 1]] : [[type, 1]];
+  for (const [t0, alpha] of parts) {
+    ctx.save(); ctx.globalAlpha = alpha; ctx.strokeStyle = AMBER; ctx.setLineDash([3, 4]); ctx.beginPath();
+    for (let i = 0; i <= 30; i++) { const t = typeGeom(t0, q * i / 30), pt = t.cw || t.sh; i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y); }
+    ctx.stroke(); ctx.restore();
+  }
   ctx.lineWidth = 3.5 / k; line(ctx, g.sh.x, g.sh.y, g.tip.x, g.tip.y); ctx.lineWidth = 1.5 / k;
   circle(ctx, g.P.x, g.P.y, 2.5);
   const { cw, sh } = g;
-  if (type === 'fixed') { ctx.save(); ctx.translate(cw.x, cw.y); ctx.rotate(rad(g.a)); ctx.strokeRect(-11, -11, 22, 22); ctx.restore(); }
+  if (type === 'counterweight') {
+    const f = typeGeom('fixed', q).cw, hg = typeGeom('hinged', q).cw;
+    ctx.save(); ctx.globalAlpha = .4; ctx.translate(f.x, f.y); ctx.rotate(rad(g.a)); ctx.strokeRect(-11, -11, 22, 22); ctx.restore();
+    line(ctx, sh.x, sh.y, hg.x, hg.y - 12); ctx.strokeRect(hg.x - 11, hg.y - 12, 22, 24);
+  }
+  else if (type === 'whipper') { line(ctx, sh.x, sh.y, cw.x, cw.y); ctx.strokeRect(cw.x - 10, cw.y - 10, 20, 20); }
   else if (type === 'floating') ctx.strokeRect(cw.x - 11, cw.y - 2, 22, 24);
   else if (type === 'hybrid') { line(ctx, sh.x, sh.y, cw.x, cw.y - 6); ctx.strokeRect(cw.x - 6, cw.y - 6, 12, 12); drawCrew(ctx, sh, 2, q); }
   else if (type === 'traction') drawCrew(ctx, sh, 3, q);
